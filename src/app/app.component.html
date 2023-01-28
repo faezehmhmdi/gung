@@ -1,10 +1,10 @@
 <div class="card text-center main-card">
   <div class="card-header" id="toolbar">
-      <img
-        width="40"
-        alt="Gung Logo"
-        src="./assets/logo.png"/>
-      <span>Gung Project</span>
+    <img
+      width="40"
+      alt="Gung Logo"
+      src="./assets/logo.png"/>
+    <span>Gung Project</span>
   </div>
   <div class="card-body">
     <div class="card h-100 flex-column align-items-center col-12">
@@ -12,8 +12,25 @@
         <h2 class="text-light">Categories</h2>
       </div>
       <div class="card-body w-75">
+        <form>
+          <div class="mb-3">
+            <label for="name" class="form-label">Name Filter</label>
+            <input type="text" class="form-control" id="name" [(ngModel)]="filterName" placeholder="Filter by name"
+                   [ngModelOptions]="{standalone: true}" (ngModelChange)="updateLine($event)">
+          </div>
+          <div class="mb-3">
+            <label for="id" class="form-label">Id Filter</label>
+            <input type="text" class="form-control" id="id" [(ngModel)]="filterId" placeholder="Filter by id"
+                   [ngModelOptions]="{standalone: true}">
+          </div>
+          <div class="mb-3">
+            <label for="price" class="form-label">Price Filter</label>
+            <input type="text" class="form-control" id="price" [(ngModel)]="filterPrice" placeholder="Filter by price"
+                   [ngModelOptions]="{standalone: true}">
+          </div>
+        </form>
         <div class="accordion" *ngIf="category">
-          <app-category [category]="category"></app-category>
+          <app-category [category]="category" [filterName]="filterName" [filterId]="filterId" [filterPrice]="filterPrice"></app-category>
         </div>
       </div>
     </div>

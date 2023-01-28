@@ -17,14 +17,20 @@ export class AppComponent {
 
   title = 'Gung';
   category: Category | undefined;
+  filterName: any;
+  filterId: any;
+  filterPrice: any;
 
 
   ngOnInit() {
     this.getCategories()
   }
 
+  updateLine(e: any) {
+    console.log(e)
+  }
   getCategories() {
-    this.categoryService.getCategories().pipe().subscribe(res => {
+    this.categoryService.getAlotOfCategories().pipe().subscribe(res => {
       this.category = res
     })
   }

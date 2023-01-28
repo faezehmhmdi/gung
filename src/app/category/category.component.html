@@ -10,12 +10,12 @@
   <div id="collapse{{category.id}}" class="accordion-collapse collapse"
        [attr.aria-labelledby]="'heading'+category.id">
     <div class="accordion-body">
-      <ul *ngFor="let child of category.children | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }">
+      <ul *ngFor="let child of filteredCategories | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }">
         <li>
           <app-category [category]="child"></app-category>
         </li>
       </ul>
-      <pagination-controls *ngIf="category.children.length > 5"
+      <pagination-controls *ngIf="filteredCategories.length > itemsPerPage"
                            (pageChange)="currentPage = $event"></pagination-controls>
     </div>
   </div>
