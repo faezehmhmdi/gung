@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {Router} from "@angular/router";
+import {ProductService} from "../services/product.service";
+import {map} from "rxjs";
 
 @Component({
   selector: 'app-category',
@@ -10,7 +11,7 @@ import {Router} from "@angular/router";
 export class CategoryComponent {
 
   constructor(
-    private router: Router
+    public productService: ProductService
   ) {
   }
 
@@ -18,34 +19,61 @@ export class CategoryComponent {
   @Input() filterName: string = ""
   @Input() filterId: string = ""
   @Input() filterPrice: string = ""
+  @Input() inStock: boolean = false
+  @Input() childrenData: any;
   currentPage = 1;
   itemsPerPage = 10;
   filteredCategories = [];
 
+
   ngOnInit() {
-    this.filteredCategories = this.category.children
+
   }
 
   ngOnChanges() {
-    this.filterChildren();
-    console.log(this.filteredCategories)
+    this.filterCategories()
+    // this.loadProducts();
   }
 
-  filterChildren() {
-    this.filteredCategories = this.category.children;
+  async filterCategories() {
+    this.filteredCategories = this.category.children
     if (this.filterName) {
-      this.filteredCategories = this.filteredCategories.filter((x: { name: string; }) => x.name.toLowerCase().includes(this.filterName.toLowerCase()));
+      this.filteredCategories = this.category.children
+        .map((x: any) => ({
+          ...x,
+          children: x.children.filter((x: { name: string; }) => x.name.toLowerCase().includes(this.filterName.toLowerCase()))
+        })).filter((x: any) => x.children.length > 0);
     }
     if (this.filterId) {
-      this.filteredCategories = this.filteredCategories.filter((x: { id: number; }) => x.id === +this.filterId);
+      this.filteredCategories = this.category.children
+        .map((x: any) => ({
+          ...x,
+          children: x.children.filter((x: { id: string; }) => x.id.includes(this.filterId))
+        })).filter((x: any) => x.children.length > 0);
     }
     if (this.filterPrice) {
-      this.filteredCategories = this.filteredCategories.filter((x: { price: number; }) => x.price === +this.filterPrice);
+      const filteredCategories = await Promise.all(
+        this.filteredCategories.map(async (x: any) => {
+          const children = await Promise.all(
+            x.children.map(async (child: any) => {
+              if (!this.isProduct(child)) {
+                return child;
+              }
+              const product = await this.productService.getRandomProduct(child.id).toPromise();
+              // @ts-ignore
+              if (product.extra.AGA.PRI <= this.filterPrice) {
+                return child;
+              }
+            })
+          );
+          return {...x, children: children.filter((c) => c)};
+        })
+      );
+      // @ts-ignore
+      this.filteredCategories = filteredCategories.filter((x) => x.children.length > 0);
     }
-
-    this.currentPage = 1;
-    this.itemsPerPage = 10;
   }
+
 
   isCategory(category: any) {
     return category.id.startsWith("s");
@@ -53,9 +81,6 @@ export class CategoryComponent {
 
   isProduct(category: any) {
     return !category.id.startsWith("s");
-  }
-
-  showProductInfo(id: string) {
   }
 
 

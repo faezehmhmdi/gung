@@ -12,25 +12,34 @@
         <h2 class="text-light">Categories</h2>
       </div>
       <div class="card-body w-75">
-        <form>
-          <div class="mb-3">
-            <label for="name" class="form-label">Name Filter</label>
-            <input type="text" class="form-control" id="name" [(ngModel)]="filterName" placeholder="Filter by name"
-                   [ngModelOptions]="{standalone: true}" (ngModelChange)="updateLine($event)">
-          </div>
-          <div class="mb-3">
-            <label for="id" class="form-label">Id Filter</label>
-            <input type="text" class="form-control" id="id" [(ngModel)]="filterId" placeholder="Filter by id"
-                   [ngModelOptions]="{standalone: true}">
-          </div>
-          <div class="mb-3">
-            <label for="price" class="form-label">Price Filter</label>
-            <input type="text" class="form-control" id="price" [(ngModel)]="filterPrice" placeholder="Filter by price"
-                   [ngModelOptions]="{standalone: true}">
-          </div>
-        </form>
         <div class="accordion" *ngIf="category">
-          <app-category [category]="category" [filterName]="filterName" [filterId]="filterId" [filterPrice]="filterPrice"></app-category>
+          <form>
+            <div class="row flex-lg-row flex-sm-column justify-content-center p-2">
+              <div class="col-lg-2 col-sm-12">
+                <input type="text" class="form-control" id="name" [(ngModel)]="filterName" placeholder="Filter by name"
+                       [ngModelOptions]="{standalone: true}">
+              </div>
+              <div class="col-lg-2 col-sm-12">
+                <input type="text" class="form-control" id="id" [(ngModel)]="filterId" placeholder="Filter by id"
+                       [ngModelOptions]="{standalone: true}">
+              </div>
+              <div class="col-lg-2 col-sm-12">
+                <input type="text" class="form-control" id="price" [(ngModel)]="filterPrice"
+                       placeholder="Filter by price"
+                       [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+            <div class="row flex-lg-row flex-sm-column justify-content-center p-2">
+              <div class="form-check col-lg-2 col-sm-12">
+                <input class="form-check-input" type="checkbox" id="inStock" [(ngModel)]="inStock" [ngModelOptions]="{standalone: true}">
+                <label class="form-check-label" for="inStock">
+                  Default checkbox
+                </label>
+              </div>
+            </div>
+          </form>
+          <app-category [category]="category" [filterName]="filterName" [filterId]="filterId"
+                        [filterPrice]="filterPrice" [inStock]="inStock"></app-category>
         </div>
       </div>
     </div>
