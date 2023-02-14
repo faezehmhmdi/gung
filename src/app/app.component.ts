@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {CategoryService, Category} from "./services/category.service";
-import {first, Observable} from "rxjs";
+import {first, firstValueFrom, map, Observable} from "rxjs";
 import {ProductService} from "./services/product.service";
 
 
@@ -23,8 +23,6 @@ export class AppComponent {
   filterId: any;
   filterPrice: any;
   inStock: any;
-  childrenData: object = new Map<string, object>();
-
 
   ngOnInit() {
     this.getCategories();
@@ -32,12 +30,18 @@ export class AppComponent {
 
 
   getCategories() {
-    this.categoryService.getAlotOfCategories().pipe().subscribe(res => {
-      this.category = res
+    const rep = async (x: Category) => {
+      if (!x.id.startsWith("s")) {
+        x.name = await firstValueFrom(this.productService.getRandomProduct(x.id).pipe(map(r => r.name)))
+        return x
+      } else {
+        x.children = await Promise.all(x.children.map(async y => await rep(y)))
+        return x
+      }
+    }
+    this.categoryService.getAlotOfCategories().pipe().subscribe(async res => {
+      this.category = await rep(res)
     })
   }
-
-
-
 }
 

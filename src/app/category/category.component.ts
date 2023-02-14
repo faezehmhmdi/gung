@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {ProductService} from "../services/product.service";
-import {map} from "rxjs";
+import {firstValueFrom, map} from "rxjs";
 
 @Component({
   selector: 'app-category',
@@ -32,7 +32,6 @@ export class CategoryComponent {
 
   ngOnChanges() {
     this.filterCategories()
-    // this.loadProducts();
   }
 
   async filterCategories() {
@@ -52,23 +51,25 @@ export class CategoryComponent {
         })).filter((x: any) => x.children.length > 0);
     }
     if (this.filterPrice) {
-      const filteredCategories = await Promise.all(
+      const filteredCategories =
         this.filteredCategories.map(async (x: any) => {
           const children = await Promise.all(
             x.children.map(async (child: any) => {
               if (!this.isProduct(child)) {
                 return child;
               }
-              const product = await this.productService.getRandomProduct(child.id).toPromise();
+              const product = await firstValueFrom(this.productService.getRandomProduct(child.id));
               // @ts-ignore
-              if (product.extra.AGA.PRI <= this.filterPrice) {
+              if (product.extra.AGA.PRI.replace(" ", "").startsWith(this.filterPrice) ) {
+                console.log(this.filterPrice)
+                // @ts-ignore
+                console.log(product.extra.AGA.PRI.replace(" ", ""))
                 return child;
               }
             })
           );
           return {...x, children: children.filter((c) => c)};
         })
-      );
       // @ts-ignore
       this.filteredCategories = filteredCategories.filter((x) => x.children.length > 0);
     }

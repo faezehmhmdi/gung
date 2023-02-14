@@ -12,7 +12,6 @@ import {FormsModule} from "@angular/forms";
   declarations: [
     AppComponent,
     CategoryComponent,
-    ProductComponent,
   ],
   imports: [
     BrowserModule,
