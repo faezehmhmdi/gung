@@ -20,7 +20,9 @@ export class CategoryComponent {
   @Input() filterId: string = ""
   @Input() filterPrice: string = ""
   @Input() inStock: boolean = false
-  @Input() childrenData: any;
+  @Input() volumeMin: number = 0;
+  @Input() volumeMax: number = 0;
+  @Input() linkedToMain: boolean = false;
   currentPage = 1;
   itemsPerPage = 10;
   filteredCategories = [];
@@ -40,38 +42,46 @@ export class CategoryComponent {
       this.filteredCategories = this.category.children
         .map((x: any) => ({
           ...x,
-          children: x.children.filter((x: { name: string; }) => x.name.toLowerCase().includes(this.filterName.toLowerCase()))
+          children: x.children.filter((x: { name: string; }) => x.name.toLowerCase().startsWith(this.filterName.toLowerCase()))
         })).filter((x: any) => x.children.length > 0);
     }
     if (this.filterId) {
       this.filteredCategories = this.category.children
         .map((x: any) => ({
           ...x,
-          children: x.children.filter((x: { id: string; }) => x.id.includes(this.filterId))
+          children: x.children.filter((x: { id: string; }) => x.id.startsWith(this.filterId))
         })).filter((x: any) => x.children.length > 0);
     }
+
     if (this.filterPrice) {
-      const filteredCategories =
-        this.filteredCategories.map(async (x: any) => {
-          const children = await Promise.all(
-            x.children.map(async (child: any) => {
-              if (!this.isProduct(child)) {
-                return child;
-              }
-              const product = await firstValueFrom(this.productService.getRandomProduct(child.id));
-              // @ts-ignore
-              if (product.extra.AGA.PRI.replace(" ", "").startsWith(this.filterPrice) ) {
-                console.log(this.filterPrice)
-                // @ts-ignore
-                console.log(product.extra.AGA.PRI.replace(" ", ""))
-                return child;
-              }
-            })
-          );
-          return {...x, children: children.filter((c) => c)};
-        })
-      // @ts-ignore
-      this.filteredCategories = filteredCategories.filter((x) => x.children.length > 0);
+      this.filteredCategories = this.category.children
+        .map((x: any) => ({
+          ...x,
+          children: x.children.filter((x: { price: string; }) => x.price == this.filterPrice)
+        })).filter((x: any) => x.children.length > 0);
+    }
+    if (this.inStock) {
+      this.filteredCategories = this.category.children
+        .map((x: any) => ({
+          ...x,
+          children: x.children.filter((x: { inStock: number; }) => x.inStock > 0)
+        })).filter((x: any) => x.children.length > 0).sort((a: any, b: any) => {
+          const aLGA = Math.min(...a.children.map((x: any) => x.inStock));
+          const bLGA = Math.min(...b.children.map((x: any) => x.inStock));
+          return aLGA - bLGA;
+        });
+    }
+
+    if (this.volumeMin && this.volumeMax) {
+      this.filteredCategories = this.category.children
+        .map((x: any) => ({
+          ...x,
+          children: x.children.filter((x: { vol: number; }) => x.vol >= this.volumeMin && x.vol <= this.volumeMax)
+        })).filter((x: any) => x.children.length > 0).sort((a: any, b: any) => {
+          const aVOL = Math.min(...a.children.map((x: any) => x.vol));
+          const bVOL = Math.min(...b.children.map((x: any) => x.vol));
+          return aVOL - bVOL;
+        });
     }
   }
 

@@ -1,5 +1,5 @@
 <div class="accordion-item" *ngIf="isCategory(category)">
-  <h2 class="accordion-header justify-content-center">
+  <h2 class="accordion-header justify-content-center" *ngIf="!linkedToMain">
     <button class="accordion-button collapsed text-bg-secondary fw-bold" type="button" data-bs-toggle="collapse"
             [attr.data-bs-target]="'#collapse'+category.id"
             aria-expanded="false" [attr.aria-controls]="'collapse'+category.id">
@@ -20,7 +20,7 @@
     </div>
   </div>
 </div>
-<button class="btn" id="productBtn" *ngIf="isProduct(category)">
+<button class="btn" id="productBtn" *ngIf="isProduct(category) && !linkedToMain">
   {{category.name}}
 </button>
 

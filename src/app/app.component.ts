@@ -19,23 +19,32 @@ export class AppComponent {
 
   title = 'Gung';
   category: Category | undefined;
-  filterName: any;
-  filterId: any;
-  filterPrice: any;
+  filterName: string = "";
+  filterId: string = "";
+  filterPrice: string = "";
   inStock: any;
+  linkedToMain: any;
+  volumeMin: number = 0;
+  volumeMax: number = 0;
 
   ngOnInit() {
     this.getCategories();
   }
 
 
-  getCategories() {
-    const rep = async (x: Category) => {
+  async getCategories() {
+    const rep = async (x: any) => {
       if (!x.id.startsWith("s")) {
-        x.name = await firstValueFrom(this.productService.getRandomProduct(x.id).pipe(map(r => r.name)))
+        await firstValueFrom(this.productService.getRandomProduct(x.id).pipe(map(r => {
+          x.name = r.name;
+          x.id = r.id;
+          x.price = r.extra['AGA'].PRI.replaceAll(' ', '');
+          x.inStock = Number(r.extra['AGA'].LGA.replaceAll(' ', ''));
+          x.vol = Number(r.extra['AGA'].VOL.replaceAll(' ', ''));
+        })))
         return x
       } else {
-        x.children = await Promise.all(x.children.map(async y => await rep(y)))
+        x.children = await Promise.all(x.children.map(async (y: any) => await rep(y)))
         return x
       }
     }

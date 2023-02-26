@@ -31,15 +31,48 @@
             </div>
             <div class="row flex-lg-row flex-sm-column justify-content-center p-2">
               <div class="form-check col-lg-2 col-sm-12">
-                <input class="form-check-input" type="checkbox" id="inStock" [(ngModel)]="inStock" [ngModelOptions]="{standalone: true}">
+                <input class="form-check-input" type="checkbox" id="inStock" [(ngModel)]="inStock"
+                       [ngModelOptions]="{standalone: true}">
                 <label class="form-check-label" for="inStock">
-                  Default checkbox
+                  In stock
                 </label>
               </div>
             </div>
+            <div class="row flex-lg-row flex-sm-column justify-content-center p-2">
+              <div class="form-check col-lg-2 col-sm-12">
+                <input class="form-check-input" type="checkbox" id="linkedToMain" [(ngModel)]="linkedToMain"
+                       [ngModelOptions]="{standalone: true}">
+                <label class="form-check-label" for="linkedToMain">
+                  Linked to main
+                </label>
+              </div>
+            </div>
+            <div class="row flex-lg-row flex-sm-column justify-content-center p-2">
+              <div class="form-check col-lg-2 col-sm-12">
+                <label class="form-label" for="volumeMin">
+                  Volume from: {{this.volumeMin}}
+                </label>
+                <input class="form-range" type="range" id="volumeMin" min="0" max="20"
+                       [(ngModel)]="volumeMin" step="0.5"
+                       [ngModelOptions]="{standalone: true}">
+              </div>
+
+            </div>
+            <div class="row flex-lg-row flex-sm-column justify-content-center p-2">
+              <div class="form-check col-lg-2 col-sm-12">
+                <label class="form-label" for="volumeMax">
+                  Volume to: {{this.volumeMax}}
+                </label>
+                <input class="form-range" type="range" id="volumeMax" [min]="volumeMin" max="20"
+                       [(ngModel)]="volumeMax" step="0.5"
+                       [ngModelOptions]="{standalone: true}">
+              </div>
+
+            </div>
           </form>
           <app-category [category]="category" [filterName]="filterName" [filterId]="filterId"
-                        [filterPrice]="filterPrice" [inStock]="inStock"></app-category>
+                        [filterPrice]="filterPrice" [inStock]="inStock" [volumeMin]="volumeMin"
+                        [volumeMax]="volumeMax" [linkedToMain]="linkedToMain"></app-category>
         </div>
       </div>
     </div>
